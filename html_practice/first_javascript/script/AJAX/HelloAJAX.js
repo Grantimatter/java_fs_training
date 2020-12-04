@@ -1,14 +1,3 @@
-let pokeDiv = document.createElement("div");
-pokeDiv.style.display = "flex";
-pokeDiv.style.justifyContent = "space-between";
-pokeDiv.style.flexWrap = "wrap";
-document.body.appendChild(pokeDiv);
-
-let loaded = 0;
-const pokeStartNum = 1;
-const pokeRange = 151;
-var pokeArray = [pokeRange];
-
 function ajaxFunc(num){
     let xhr = new XMLHttpRequest();
     
@@ -18,14 +7,11 @@ function ajaxFunc(num){
             let pokepic = document.createElement("img");
 
             pokepic.setAttribute("src", data.sprites.front_default);
+            pokepic.title = data.name;
             let span = document.createElement("span");
             span.appendChild(pokepic);
-            sortPokemon(pokepic, num);
-            loaded++;
-            if(loaded == pokeRange){
-                console.log("Last pokemon reached");
-                displayPokemon();
-            }
+            addPokemon(span, num);
+            
         }
     }
 
@@ -35,22 +21,63 @@ function ajaxFunc(num){
     xhr.send();
 }
 
-function sortPokemon(pokemonElement, pokeNum){
-    console.log("Sorting pokemon");
-    pokeArray[pokeNum - pokeStartNum] = pokemonElement;
-}
+let pokemonLoaded = 0;
+let generationArray = [151, 100, 135, 107, 156, 72, 88, 88];
+var pokeArray = [];
 
-function displayPokemon(){
-    for(const pokemon of pokeArray){
-        pokeDiv.appendChild(pokemon);
+let pokeDiv = document.createElement("div");
+pokeDiv.style.display = "flex";
+pokeDiv.style.justifyContent = "space-between";
+pokeDiv.style.flexWrap = "wrap";
+
+
+var currentGen;
+var pokeRange;
+
+let getGeneration = function(generation){
+    let pokeGenh1 = document.createElement("h1");
+    pokeGenh1.setAttribute("center", "");
+    pokeGenh1.style.border = "2px rgb(255, 237, 214) solid";
+    pokeGenh1.style.borderRadius = "8px";
+    pokeGenh1.style.width = "max-content";
+    pokeGenh1.style.padding = "0px 16px";
+    pokeGenh1.innerHTML = "Generation " + generation + " Pokemon";
+    document.body.append(pokeGenh1);
+
+    console.log("Number of pokemon in generation " + generation + ": " + generationArray[generation-1]);
+    let start = 1;
+    pokeRange = generationArray[generation - 1];
+    for(i = 0; i < generation-1; i++){
+        start += generationArray[i];
     }
-    console.log("Displayed Pokemon");
+
+    pokeArray = new Array(start + pokeRange);
+
+    for(i = start; i < start + pokeRange; i++){
+        console.log("Getting pokemon with id of " + i);
+        ajaxFunc(i);
+    }
+    document.body.appendChild(pokeDiv);
 }
 
-let getPokemon = function(startNum, range){
-    for(i = startNum; i < startNum + range; i++){
-        ajaxFunc(i, i == startNum + range - 1 ? true : false);
+let getPokemon = function(pokemonId){
+    ajaxFunc(pokemonId);
+}
+
+let addPokemon = function(element, num){
+    pokeArray[num] = element;
+    pokemonLoaded++;
+    if(pokemonLoaded >= pokeRange){
+        displayPokemon();
     }
 }
 
-getPokemon(pokeStartNum, pokeRange);
+let displayPokemon = function(){
+    for(pokemon of pokeArray){
+        if(pokemon){
+            pokeDiv.appendChild(pokemon);
+        }
+    }
+}
+
+getGeneration(6);
