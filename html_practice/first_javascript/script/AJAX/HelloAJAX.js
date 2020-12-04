@@ -1,34 +1,53 @@
+const api = "https://pokeapi.co/api/v2/pokemon/";
+const wiki = "https://pokemon.fandom.com/wiki/";
+
 class Pokemon{
     constructor(id, name, type, sprite_front_url){
         this.id = id;
         this.name = name.charAt(0).toUpperCase() + name.slice(1);
+        if(this.name.includes('-')){
+            if(this.name.includes('-m')){
+                this.name = String(this.name).replace('-m', '\u2642');
+            }else if(this.name.includes('-f')){
+                this.name = String(this.name).replace('-f', '\u2640');
+            }
+        }
         this.type = type;
 
         this.div = document.createElement("div");
+        this.div.style.backgroundColor = "rgb(25,25,25)";
         this.div.style.display = "flex";
         this.div.style.justifyContent = "min-content";
         this.div.style.justifyItems = "center";
         this.div.style.flexDirection = "column";
         this.div.style.border = "2px grey solid";
 
-        this.nameElement = document.createElement("h4");
-        this.nameElement.style.margin = "8px";
-        this.nameElement.style.display = "flex";
-        this.nameElement.style.justifyContent = "center";
-        this.nameElement.style.flexDirection = "row";
-        this.nameElement.innerHTML = this.name+"\u00A0";
+        // The name element
+        let nameElement = document.createElement("a");
+        nameElement.href = wiki + this.name;
+        nameElement.target = "_blank";
+        nameElement.classList.add("badge","badge-dark");
+        nameElement.style.margin = "8px";
+        nameElement.style.padding = "4px 8px";
+        nameElement.style.display = "flex";
+        nameElement.style.justifyContent = "center";
+        nameElement.style.alignItems = "center";
+        nameElement.style.alignSelf = "center";
+        nameElement.style.alignContent = "center";
+        nameElement.style.flexDirection = "row";
+        nameElement.innerHTML = this.name + "\u00A0\u00A0";
 
         let idElement = document.createElement("span");
         idElement.classList.add("badge", "badge-pill", "badge-secondary");
         idElement.style.alignSelf = "center";
         idElement.style.fontSize = "x-small";
         idElement.innerHTML = id;
-        this.nameElement.appendChild(idElement);
+        nameElement.appendChild(idElement);
 
-        this.div.appendChild(this.nameElement);
+        this.div.appendChild(nameElement);
 
         this.link = document.createElement("a");
-        this.link.href = "https://pokemon.fandom.com/wiki/" + this.name;
+        this.link.href = wiki + this.name;
         this.link.target = "_blank";
         let img = document.createElement("img");
         img.src = sprite_front_url;
@@ -41,14 +60,18 @@ class Pokemon{
 
         let typeDiv = document.createElement("div");
         typeDiv.style.display = "flex";
-        typeDiv.style.justifyContent = "flex-start";
-        typeDiv.style.flexDirection = "column";
+        typeDiv.style.justifyContent = "space-evenly";
+        typeDiv.style.flexDirection = "row";
         this.div.appendChild(typeDiv);
 
         let typeImgs = this.getTypeImageArray(type);
         
         for(var typeimg of typeImgs){
-            typeDiv.appendChild(typeimg);
+            let typeLink = document.createElement("a");
+            typeLink.href = wiki + typeimg.title;
+            typeLink.target = "_blank";
+            typeLink.appendChild(typeimg);
+            typeDiv.appendChild(typeLink);
         }
         this.div.appendChild(this.link);
     }
@@ -63,7 +86,10 @@ class Pokemon{
         for(i = 0; i < typeImages.length; i++){
             let img = document.createElement("img");
             img.src = this.getTypeImageUrl(types[i].type.name);
-            img.style.width = "50%";
+            //img.style.width = "50%";
+            img.height = "24";
+            img.title = types[i].type.name+"_type";
+            //img.style.margin = "3px";
             typeImages[i] = img;
         }
         return typeImages;
@@ -123,7 +149,7 @@ function ajaxFunc(num){
 
     onGotPokemon = xhr.onreadystatechange
 
-    xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + Number(num));
+    xhr.open("GET", api + Number(num));
     xhr.send();
 }
 
@@ -185,10 +211,5 @@ let displayPokemon = function(){
         }
     }
 }
-
-//let pokemonId = document.getElementById('btn_submitPokemonId').nodeValue;
-
-//let submitButton = document.getElementById("btn_submitPokemonId");
-//submitButton.addEventListener("pokepic");
 
 getGeneration(1);
