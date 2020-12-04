@@ -1,0 +1,41 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #1f1f1f;
+    color: rgb(255, 237, 214);
+}
+
+#main{
+    width: fit-content;
+    border-left-width: 2px;
+    border-left-color: gray;
+    border-left-style: solid;
+    border-right-width: 2px;
+    border-right-color: gray;
+    border-right-style: solid;
+    padding: 16px;
+    background-color: rgb(41, 41, 41);
+}
+
+[grid]{
+    display: grid;
+    grid-template: 3fr / 1fr;
+}
+
+[center]{
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+[centerChildren]{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+[centerChildren] *{
+    width: max-content;
+    margin: 4px;
+}
